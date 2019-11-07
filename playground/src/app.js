@@ -6,27 +6,6 @@ const { setDefaultOptions } = require('./commons/Options')
 const testIDs = require('./testIDs');
 const Screens = require('./screens/Screens');
 
-if (Platform.OS === 'android') {
-  alert = (title) => {
-    Navigation.showOverlay({
-      component: {
-        name: Screens.Alert,
-        passProps: {
-          title
-        },
-        options: {
-          layout: {
-            componentBackgroundColor: 'transparent'
-          },
-          overlay: {
-            interceptTouchOutside: true
-          }
-        }
-      }
-    });
-  };
-}
-
 function start() {
   registerScreens();
   Navigation.events().registerAppLaunchedListener(async () => {
@@ -34,63 +13,51 @@ function start() {
 
     Navigation.setRoot({
       root: {
-        bottomTabs: {
-          children: [
-            {
-              stack: {
-                children: [
-                  {
-                    component: {
-                      name: 'Layouts'
-                    }
-                  }
-                ],
-                options: {
-                  bottomTab: {
-                    text: 'Layouts',
-                    icon: require('../img/layouts.png'),
-                    selectedIcon: require('../img/layouts_selected.png'),
-                    testID: testIDs.LAYOUTS_TAB
-                  }
-                }
-              }
-            },
-            {
-              stack: {
-                children: [
-                  {
-                    component: {
-                      name: 'Options'
-                    }
-                  }
-                ],
-                options: {
-                  topBar: {
-                    title: {
-                      text: 'Default Title'
-                    }
-                  },
-                  bottomTab: {
-                    text: 'Options',
-                    icon: require('../img/options.png'),
-                    selectedIcon: require('../img/options_selected.png'),
-                    testID: testIDs.OPTIONS_TAB
-                  }
-                }
-              }
-            },
-            {
-              stack: {
-                children: [
-                  {
-                    component: {
-                      name: 'Navigation'
-                    }
-                  }
-                ]
-              }
+        sideMenu: {
+          id: 'sideMenu',
+          right: {
+            component: {
+              id: 'sideMenuRight',
+              name: 'SideMenuRight'
             }
-          ]
+          },
+          center: {
+            stack: {
+              id: 'AppRoot',
+              children: [{
+                component: {
+                  name: 'Pushed',
+                  passProps: {},
+                  options: {
+                    topBar: {
+                      buttonColor: '#fff',
+                      backButton: {
+                        color: '#fff'
+                      },
+                      background: {
+                        color: '#ff0000',
+                      },
+                      title: {
+                        component: {
+                          name: 'CustomTopBar',
+                          alignment: 'center',
+                        },
+                      },
+                      rightButtons: [{
+                        id: 'TOP_BAR_BURGER_ID',
+                        icon: require('../img/options.png')
+                      }]
+                    },
+                    sideMenu: {
+                      right: {
+                        enabled: true
+                      }
+                    }
+                  }
+                }
+              }]
+            }
+          }
         }
       }
     });

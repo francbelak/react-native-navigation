@@ -100,6 +100,7 @@ module.exports = {
   StatusBarOptions,
   StatusBarFirstTab,
   TopBarBackground: 'TopBarBackground',
+  CustomTopBar: 'CustomTopBar',
   FlatListScreen: 'FlatListScreen',
   Alert: 'Alert',
   Orientation: 'Orientation',

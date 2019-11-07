@@ -48,113 +48,71 @@ class PushedScreen extends React.Component {
     const stackPosition = this.getStackPosition();
     return (
       <Root componentId={this.props.componentId} footer={`Stack Position: ${stackPosition}`}>
-        <Button label='Push' testID={PUSH_BTN} onPress={this.push} />
-        <Button label='Pop' testID={POP_BTN} onPress={this.pop} />
-        <Button label='Push Without Animation' testID={PUSH_NO_ANIM_BTN} onPress={this.pushWithoutAnimations} />
-        {stackPosition > 2 && <Button label='Pop to First Screen' testID={POP_TO_FIRST_SCREEN_BTN} onPress={this.popToFirstScreen} />}
-        <Button label='Pop to Root' testID={POP_TO_ROOT_BTN} onPress={this.popToRoot} />
-        <Button label='Add BackHandler' testID={ADD_BACK_HANDLER} onPress={this.addBackHandler} />
-        <Button label='Remove BackHandler' testID={REMOVE_BACK_HANDLER} onPress={this.removeBackHandler} />
-        <Button label='Set Stack Root' testID={SET_STACK_ROOT_BUTTON} onPress={this.setStackRoot} />
+        <Button label='Push simple' testID={PUSH_BTN} onPress={() => { this.pushSimple(Screens.Pushed); }} />
+        <Button label='Push complex' testID={PUSH_BTN} onPress={() => { this.pushComplex(Screens.FirstBottomTabsScreen); }} />
       </Root>
     );
   }
 
-  push = () => Navigation.push(this, {
-    component: {
-      name: Screens.Pushed,
-      passProps: this.createPassProps(),
-      options: {
-        topBar: {
-          title: {
-            text: `Pushed ${this.getStackPosition() + 1}`
-          }
-        }
-      }
-    }
-  });
-
-  pop = () => Navigation.pop(this);
-
-  pushWithoutAnimations = () => Navigation.push(this, {
-    component: {
-      name: Screens.Pushed,
-      passProps: this.createPassProps(),
-      options: {
-        animations: {
-          push: { enabled: false },
-          pop: { enabled: false }
-        }
-      }
-    }
-  });
-
-  popToFirstScreen = () => Navigation.popTo(this.props.previousScreenIds[0]);
-
-  popToRoot = () => Navigation.popToRoot(this);
-
-  setStackRoot = () => Navigation.setStackRoot(this, [
-    {
-      component: {
-        name: Screens.Pushed,
-        passProps: {
-          stackPosition: this.getStackPosition() + 1,
-          previousScreenIds: _.concat([], this.props.previousScreenIds || [], this.props.componentId)
-        },
-        options: {
-          animations: {
-            setStackRoot: {
-              enabled: false
-            }
-          },
-          topBar: {
-            title: {
-              text: `Pushed ${this.getStackPosition() + 1} a`
-            }
-          }
-        }
-      }
-    },
-    {
-      component: {
-        name: Screens.Pushed,
-        passProps: {
-          stackPosition: this.getStackPosition() + 1,
-          previousScreenIds: _.concat([], this.props.previousScreenIds || [], this.props.componentId)
-        },
-        options: {
-          animations: {
-            setStackRoot: {
-              enabled: false
-            }
-          },
-          topBar: {
-            title: {
-              text: `Pushed ${this.getStackPosition() + 1} b`
-            }
-          }
-        }
-      }
-    }
-  ]);
-
-  addBackHandler = () => BackHandler.addEventListener('hardwareBackPress', this.backHandler);
-
-  removeBackHandler = () => BackHandler.removeEventListener('hardwareBackPress', this.backHandler);
-
-  backHandler = () => {
-    this.setState({
-      backPress: 'Back button pressed!'
-    });
-    return true;
-  };
-
-  createPassProps = () => {
+  getTopBar() {
     return {
-      stackPosition: this.getStackPosition() + 1,
-      previousScreenIds: _.concat([], this.props.previousScreenIds || [], this.props.componentId)
+      buttonColor: '#fff',
+      backButton: {
+        color: '#fff'
+      },
+      background: {
+        color: '#ff0000',
+      },
+      title: {
+        component: {
+          name: 'CustomTopBar',
+          alignment: 'center',
+        },
+      },
+      rightButtons: [{
+        id: 'TOP_BAR_BURGER_ID',
+        icon: require('../../img/options.png')
+      }]
+    };
+  }
+
+  pushSimple = (screen) => Navigation.push(this, {
+    component: {
+      name: screen,
+      options: {
+        topBar: this.getTopBar(),
+      }
     }
-  };
+  });
+
+  pushComplex = (screen) => Navigation.push(this, {
+    bottomTabs: {
+        options: {
+          bottomTabs: {
+            animate: true,
+            backgroundColor: 'gray',
+            titleDisplayMode: 'alwaysShow',
+            currentTabIndex: 0
+          }
+        },
+        children: [{
+          component: {
+            name: screen,
+            options: {
+              topBar: this.getTopBar(),
+              bottomTab: {
+                text: 'Test 1',
+                icon: require('../../img/options.png'),
+                testID: 'TEST!1_ID',
+                selectedIconColor: 'red',
+                selectedTextColor: 'red'
+              }
+            }
+          }
+        }]
+      }
+  });
+
   getStackPosition = () => this.props.stackPosition || 1;
 }
 
